@@ -1,0 +1,106 @@
+[gd_scene load_steps=8 format=2]
+
+[ext_resource path="res://Scenes/Player.tscn" type="PackedScene" id=1]
+
+[sub_resource type="Gradient" id=1]
+colors = PoolColorArray( 1, 1, 1, 1, 1, 1, 1, 1 )
+
+[sub_resource type="GradientTexture" id=2]
+gradient = SubResource( 1 )
+
+[sub_resource type="Gradient" id=3]
+colors = PoolColorArray( 0, 0, 0, 1, 0, 0, 0, 1 )
+
+[sub_resource type="GradientTexture" id=4]
+gradient = SubResource( 3 )
+
+[sub_resource type="RectangleShape2D" id=5]
+extents = Vector2( 77.8409, 4.2179 )
+
+[sub_resource type="GDScript" id=6]
+script/source = "extends Node2D
+
+
+func display_line(to:Vector2):
+	draw_to = to
+	update()
+
+
+var draw_to:Vector2 = Vector2(0, 0)
+func _draw():
+	if draw_to == Vector2(0, 0):
+		return
+	else:
+		draw_line(get_tree().get_nodes_in_group(\"player\")[0].position, draw_to, Color(\"FF0000\"), 1)
+		yield(get_tree().create_timer(0.05), \"timeout\")
+		draw_to = Vector2(0, 0)
+		update()"
+
+[node name="Base" type="Node2D"]
+
+[node name="Room" type="Node2D" parent="."]
+editor/display_folded = true
+position = Vector2( 511.583, 294.215 )
+
+[node name="Floor" type="Sprite" parent="Room"]
+scale = Vector2( 0.0677331, 157.47 )
+texture = SubResource( 2 )
+
+[node name="Wall" type="Node2D" parent="Room"]
+
+[node name="Sprite" type="Sprite" parent="Room/Wall"]
+position = Vector2( 1.00586, -77.5395 )
+scale = Vector2( 0.0740911, 8.37901 )
+texture = SubResource( 4 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Room/Wall"]
+editor/display_folded = true
+visible = false
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Room/Wall/StaticBody2D"]
+position = Vector2( 0.794434, -77.0596 )
+shape = SubResource( 5 )
+
+[node name="Wall2" type="Node2D" parent="Room"]
+position = Vector2( 0, 157.078 )
+
+[node name="Sprite" type="Sprite" parent="Room/Wall2"]
+position = Vector2( 1.00586, -77.5395 )
+scale = Vector2( 0.0740911, 8.37901 )
+texture = SubResource( 4 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Room/Wall2"]
+editor/display_folded = true
+visible = false
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Room/Wall2/StaticBody2D"]
+position = Vector2( 0.794434, -77.0596 )
+shape = SubResource( 5 )
+
+[node name="Wall3" type="Node2D" parent="Room"]
+position = Vector2( -3.8689, -1.54755 )
+rotation = 1.57994
+
+[node name="Sprite" type="Sprite" parent="Room/Wall3"]
+position = Vector2( 1.00586, -77.5395 )
+scale = Vector2( 0.0740911, 8.37901 )
+texture = SubResource( 4 )
+
+[node name="StaticBody2D" type="StaticBody2D" parent="Room/Wall3"]
+editor/display_folded = true
+visible = false
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Room/Wall3/StaticBody2D"]
+position = Vector2( 0.794434, -77.0596 )
+shape = SubResource( 5 )
+
+[node name="Player" parent="." instance=ExtResource( 1 )]
+position = Vector2( 217.841, 102.439 )
+
+[node name="ShootLiner" type="Node2D" parent="." groups=[
+"ShootLiner",
+]]
+script = SubResource( 6 )
