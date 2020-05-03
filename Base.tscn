@@ -95,8 +95,30 @@ current = true
 ]]
 script = SubResource( 4 )
 
-[node name="Enemy" parent="." instance=ExtResource( 3 )]
+[node name="Enemy" parent="." groups=[
+"enemies",
+] instance=ExtResource( 3 )]
 position = Vector2( 629.154, 305.506 )
+
+[node name="Enemy2" parent="." groups=[
+"enemies",
+] instance=ExtResource( 3 )]
+position = Vector2( 97.996, 249.935 )
+
+[node name="Enemy3" parent="." groups=[
+"enemies",
+] instance=ExtResource( 3 )]
+position = Vector2( 839.808, 16.0184 )
+
+[node name="Enemy4" parent="." groups=[
+"enemies",
+] instance=ExtResource( 3 )]
+position = Vector2( 455.979, 423.11 )
+
+[node name="Enemy5" parent="." groups=[
+"enemies",
+] instance=ExtResource( 3 )]
+position = Vector2( 748.051, 448.957 )
 
 [node name="Goal" type="Position2D" parent="."]
 position = Vector2( 556.465, 344.023 )
@@ -124,4 +146,4 @@ position = Vector2( 365.737, 217.116 )
 position = Vector2( 669.44, 178.345 )
 
 [node name="Line2D" type="Line2D" parent="."]
-texture_mode = 0
+texture_mode = 1476563920

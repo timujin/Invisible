@@ -58,7 +58,9 @@ func move_along_path(distance):
 		distance -= distance_to_next
 		start_position = path[0]
 		path.remove(0)
-		"
+		
+func kill():
+	queue_free()"
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 16.5683
@@ -119,13 +121,10 @@ func _on_Raycasts_player_detected():
 [sub_resource type="GDScript" id=4]
 script/source = "extends Area2D
 
-var i = 0
 func _process(delta):
-	return
 	var player = get_tree().get_nodes_in_group(\"player\")[0]
 	if overlaps_body(player):
-		print (\"ICU\" + str(i))
-		i+=1"
+		player.kill()"
 
 [sub_resource type="GDScript" id=5]
 script/source = "extends Node2D
@@ -179,16 +178,17 @@ shape = SubResource( 2 )
 [node name="AI" type="Node" parent="."]
 script = SubResource( 3 )
 
-[node name="Area2D" type="Area2D" parent="."]
-editor/display_folded = true
-visible = false
+[node name="KillArea" type="Area2D" parent="."]
 monitorable = false
 script = SubResource( 4 )
 
-[node name="Node2D" type="CollisionPolygon2D" parent="Area2D"]
-polygon = PoolVector2Array( 17.0052, -0.391418, 505.842, -120.506, 506.541, 118.326, 8.62518, 1.7036 )
+[node name="Node2D" type="CollisionPolygon2D" parent="KillArea"]
+position = Vector2( 0.244181, 0.244163 )
+polygon = PoolVector2Array( -7.46675, -21.9326, 25.6509, -16.6582, 24.4316, 17.4041, -8.07948, 23.249 )
 
 [node name="Raycasts" type="Node2D" parent="."]
+editor/display_folded = true
+visible = false
 script = SubResource( 5 )
 
 [node name="RayCast2D" type="RayCast2D" parent="Raycasts"]
