@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Assets/Player.png" type="Texture" id=1]
 
@@ -15,6 +15,15 @@ func _process(delta):
 		get_tree().get_nodes_in_group(\"ShootLiner\")[0].display_line($RayCast2D.get_collision_point())
 		if $RayCast2D.get_collider().is_in_group(\"enemies\"):
 			$RayCast2D.get_collider().kill()
+			
+	if Input.is_action_just_pressed(\"activate\"):
+		for door in get_tree().get_nodes_in_group(\"door_activator\"):
+			if $Activator.overlaps_area(door):
+				door.get_parent().switch()
+			
+	#	if not $RayCast2D.is_colliding(): return
+	#	if $RayCast2D.get_collider().is_in_group(\"doors\") and position.distance_to($RayCast2D.get_collider().global_position()):
+	#		$RayCast2D.get_collider().kill()
 
 func _physics_process(delta):
 	var move = Vector2()
@@ -34,6 +43,9 @@ func kill():
 
 [sub_resource type="CircleShape2D" id=2]
 radius = 19.0
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 11.4853, 17.3979 )
 
 [node name="Player" type="KinematicBody2D" groups=[
 "player",
@@ -55,3 +67,11 @@ enabled = true
 cast_to = Vector2( 1000, 0 )
 collision_mask = 14
 collide_with_areas = true
+
+[node name="Activator" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Activator"]
+position = Vector2( 32.075, 1.13204 )
+shape = SubResource( 3 )
