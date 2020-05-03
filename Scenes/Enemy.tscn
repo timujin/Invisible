@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://Assets/Player.png" type="Texture" id=1]
 
@@ -45,6 +45,7 @@ func move_along_path(distance):
 		return
 		
 	var start_position := position
+	look_at(path[0])
 	for i in range(path.size()):
 		var distance_to_next = start_position.distance_to(path[0])
 		if distance <= distance_to_next and distance >= 0.0:
@@ -69,13 +70,13 @@ enum State { PATROL, LOOKAROUND, HUNT }
 
 var current_state
 
-var patrol_target : Node2D = null
-
 onready var enemy : KinematicBody = get_node(\"..\")
 
 func _ready():
 	call_deferred(\"start_patrol\")
 
+
+var patrol_target : Node2D = null
 func start_patrol():
 	var destinations = get_tree().get_nodes_in_group(\"patrol_points\")
 	randomize()
@@ -85,9 +86,15 @@ func start_patrol():
 	
 var lookaround_timeout = 0
 func start_looking_around():
-	lookaround_timeout = 3.0
+	lookaround_timeout = 2.0
 	current_state = State.LOOKAROUND
+	$\"../AnimationPlayer\".play(\"LookAround\")
 	
+var last_known_player_location = Vector2(0,0)
+func notice_player(location):
+	last_known_player_location = location
+	enemy.set_destination(location)
+	current_state = State.HUNT
 	
 func _process(delta):
 	if current_state == State.PATROL:
@@ -103,9 +110,57 @@ func _process(delta):
 func _on_Enemy_reached_destination():
 	start_looking_around()
 	
+
+
+func _on_Raycasts_player_detected():
+	notice_player(get_tree().get_nodes_in_group(\"player\")[0])
 "
 
+[sub_resource type="GDScript" id=4]
+script/source = "extends Area2D
+
+var i = 0
+func _process(delta):
+	return
+	var player = get_tree().get_nodes_in_group(\"player\")[0]
+	if overlaps_body(player):
+		print (\"ICU\" + str(i))
+		i+=1"
+
+[sub_resource type="GDScript" id=5]
+script/source = "extends Node2D
+
+signal player_detected
+
+var i = 0
+func _process(delta):
+	i+=1
+	for ray in get_children():
+		if not ray.is_colliding(): continue
+		var collider = ray.get_collider()
+		if collider.is_in_group(\"player\"):
+			#print (\"DETECTED\" + str(i))
+			emit_signal(\"player_detected\")
+			return"
+
+[sub_resource type="Animation" id=6]
+resource_name = "LookAround"
+length = 2.0
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:rotation_degrees")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0, 1.9 ),
+"transitions": PoolRealArray( 1, 1 ),
+"update": 0,
+"values": [ 0.0, 1080.0 ]
+}
+
 [node name="Enemy" type="KinematicBody2D"]
+rotation = 18.8496
 collision_layer = 3
 collision_mask = 3
 script = SubResource( 1 )
@@ -123,4 +178,95 @@ shape = SubResource( 2 )
 
 [node name="AI" type="Node" parent="."]
 script = SubResource( 3 )
+
+[node name="Area2D" type="Area2D" parent="."]
+editor/display_folded = true
+visible = false
+monitorable = false
+script = SubResource( 4 )
+
+[node name="Node2D" type="CollisionPolygon2D" parent="Area2D"]
+polygon = PoolVector2Array( 17.0052, -0.391418, 505.842, -120.506, 506.541, 118.326, 8.62518, 1.7036 )
+
+[node name="Raycasts" type="Node2D" parent="."]
+script = SubResource( 5 )
+
+[node name="RayCast2D" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 0 )
+collision_mask = 3
+
+[node name="RayCast2D2" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 50 )
+collision_mask = 3
+
+[node name="RayCast2D10" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 100 )
+collision_mask = 3
+
+[node name="RayCast2D11" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -100 )
+collision_mask = 3
+
+[node name="RayCast2D12" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -80 )
+collision_mask = 3
+
+[node name="RayCast2D13" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 80 )
+collision_mask = 3
+
+[node name="RayCast2D14" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 70 )
+collision_mask = 3
+
+[node name="RayCast2D15" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -70 )
+collision_mask = 3
+
+[node name="RayCast2D8" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 40 )
+collision_mask = 3
+
+[node name="RayCast2D9" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -40 )
+collision_mask = 3
+
+[node name="RayCast2D3" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -50 )
+collision_mask = 3
+
+[node name="RayCast2D4" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -25 )
+collision_mask = 3
+
+[node name="RayCast2D5" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 25 )
+collision_mask = 3
+
+[node name="RayCast2D6" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, 12 )
+collision_mask = 3
+
+[node name="RayCast2D7" type="RayCast2D" parent="Raycasts"]
+enabled = true
+cast_to = Vector2( 500, -12 )
+collision_mask = 3
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+anims/LookAround = SubResource( 6 )
 [connection signal="reached_destination" from="." to="AI" method="_on_Enemy_reached_destination"]
+[connection signal="player_detected" from="Raycasts" to="AI" method="_on_Raycasts_player_detected"]
